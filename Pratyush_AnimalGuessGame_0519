@@ -1,0 +1,333 @@
+import java.util.Scanner;
+
+public class labOne
+{
+    private static Scanner stdin = new Scanner(System.in);
+
+
+    public static void main(String[ ] args)
+    {
+        BTNode<String> root;
+
+        instruct( );
+        root = beginningTree( );
+        do
+            play(root);
+        while (query("Lets Play A Game"));
+
+        System.out.println("Thank You Senpai");
+    }
+
+
+
+    public static void instruct( )
+    {
+        System.out.println("Guess an Animal");
+        System.out.println("Yes/No Question will be asked");
+        System.out.println("to recognize the Animal");
+    }
+
+
+
+    public static void play(BTNode<String> current)
+    {
+        while (!current.isLeaf( ))
+        {
+            if (query(current.getData( )))
+                current = current.getLeft( );
+            else
+                current = current.getRight( );
+        }
+
+        System.out.print("My guesses Are " + current.getData( ) + ". ");
+        if (!query("Is it correct?"))
+            learn(current);
+        else
+            System.out.println("Hah! I am always correct");
+    }
+
+
+
+    public static BTNode<String> beginningTree( )
+    {
+        BTNode<String> root;
+        BTNode<String> child;
+
+        final String ROOT_QUESTION = "Do you have whiskers";
+        final String LEFT_QUESTION = "Can you fly?";
+        final String RIGHT_QUESTION = "Do you live underwater?";
+        final String ANIMAL1 = "Cat";
+        final String ANIMAL2 = "Pigeon";
+        final String ANIMAL3 = "Fish";
+        final String ANIMAL4 = "Lion";
+
+
+        root = new BTNode<String>(ROOT_QUESTION, null, null);
+
+
+        child = new BTNode<String>(LEFT_QUESTION, null, null);
+        child.setLeft(new BTNode<String>(ANIMAL1, null, null));
+        child.setRight(new BTNode<String>(ANIMAL2, null, null));
+        root.setLeft(child);
+
+
+        child = new BTNode<String>(RIGHT_QUESTION, null, null);
+        child.setLeft(new BTNode<String>(ANIMAL3, null, null));
+        child.setRight(new BTNode<String>(ANIMAL4, null, null));
+        root.setRight(child);
+
+        return root;
+    }
+
+
+    public static void learn(BTNode<String> current)
+
+    {
+        String guessAnimal;
+        String correctAnimal;
+        String newQuestion;
+
+
+        guessAnimal = current.getData( );
+        System.out.println("Senpai i cannot guess it,can you help me? ");
+        correctAnimal = stdin.nextLine( );
+        System.out.println("Please type a yes/no question that will distinguish a");
+        System.out.println(correctAnimal + " from a " + guessAnimal + ".");
+        newQuestion = stdin.nextLine( );
+
+
+        current.setData(newQuestion);
+        System.out.println("As a " + correctAnimal + ", " + newQuestion);
+        if (query("Please answer"))
+        {
+            current.setLeft(new BTNode<String>(correctAnimal, null, null));
+            current.setRight(new BTNode<String>(guessAnimal, null, null));
+        }
+        else
+        {
+            current.setLeft(new BTNode<String>(guessAnimal, null, null));
+            current.setRight(new BTNode<String>(correctAnimal, null, null));
+        }
+    }
+
+    public static boolean query(String prompt)
+    {
+        String answer;
+
+        System.out.print(prompt + " [Y or N]: ");
+        answer = stdin.nextLine( ).toUpperCase( );
+        while (!answer.startsWith("Y") && !answer.startsWith("N"))
+        {
+            System.out.print("Invalid response. Please type Y or N: ");
+            answer = stdin.nextLine( ).toUpperCase( );
+        }
+
+        return answer.startsWith("Y");
+    }
+
+
+
+
+    public static class BTNode<E>
+    {
+
+        private E data;
+        private BTNode<E> left, right;
+
+
+        public BTNode(E initialData, BTNode<E> initialLeft, BTNode<E> initialRight)
+        {
+            data = initialData;
+            left = initialLeft;
+            right = initialRight;
+        }
+
+
+
+        public E getData( )
+        {
+            return data;
+        }
+
+
+        public BTNode<E> getLeft( )
+        {
+            return left;
+        }
+
+
+
+        public E getLeftmostData( )
+        {
+            if (left == null)
+                return data;
+            else
+                return left.getLeftmostData( );
+        }
+
+
+
+        public BTNode<E> getRight( )
+        {
+            return right;
+        }
+
+
+
+        public E getRightmostData( )
+        {
+            if (left == null)
+                return data;
+            else
+                return left.getRightmostData( );
+        }
+
+
+
+        public void inorderPrint( )
+        {
+            if (left != null)
+                left.inorderPrint( );
+            System.out.println(data);
+            if (right != null)
+                right.inorderPrint( );
+        }
+
+
+
+        public boolean isLeaf( )
+        {
+            return (left == null) && (right == null);
+        }
+
+
+
+        public void preorderPrint( )
+        {
+            System.out.println(data);
+            if (left != null)
+                left.preorderPrint( );
+            if (right != null)
+                right.preorderPrint( );
+        }
+
+
+
+        public void postorderPrint( )
+        {
+            if (left != null)
+                left.postorderPrint( );
+            if (right != null)
+                right.postorderPrint( );
+            System.out.println(data);
+        }
+
+
+
+        public void print(int depth)
+        {
+            int i;
+
+
+            for (i = 1; i <= depth; i++)
+                System.out.print("    ");
+            System.out.println(data);
+
+
+            if (left != null)
+                left.print(depth+1);
+            else if (right != null)
+            {
+                for (i = 1; i <= depth+1; i++)
+                    System.out.print("    ");
+                System.out.println("--");
+            }
+
+
+            if (right != null)
+                right.print(depth+1);
+            else if (left != null)
+            {
+                for (i = 1; i <= depth+1; i++)
+                    System.out.print("    ");
+                System.out.println("--");
+            }
+        }
+
+
+
+        public BTNode<E> removeLeftmost( )
+        {
+            if (left == null)
+                return right;
+            else
+            {
+                left = left.removeLeftmost( );
+                return this;
+            }
+        }
+
+
+
+        public BTNode<E> removeRightmost( )
+        {
+            if (right == null)
+                return left;
+            else
+            {
+                right = right.removeRightmost( );
+                return this;
+            }
+        }
+
+
+        public void setData(E newData)
+        {
+            data = newData;
+        }
+
+
+
+        public void setLeft(BTNode<E> newLeft)
+        {
+            left = newLeft;
+        }
+
+
+
+        public void setRight(BTNode<E> newRight)
+        {
+            right = newRight;
+        }
+
+
+
+        public static <E> BTNode<E> treeCopy(BTNode<E> source)
+        {
+            BTNode<E> leftCopy, rightCopy;
+
+            if (source == null)
+                return null;
+            else
+            {
+                leftCopy = treeCopy(source.left);
+                rightCopy = treeCopy(source.right);
+                return new BTNode<E>(source.data, leftCopy, rightCopy);
+            }
+        }
+
+
+
+        public static <E> long treeSize(BTNode<E> root)
+        {
+            if (root == null)
+                return 0;
+            else
+                return 1 + treeSize(root.left) + treeSize(root.right);
+        }
+
+    }
+
+
+
+}
