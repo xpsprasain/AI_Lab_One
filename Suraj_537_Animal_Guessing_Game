@@ -1,0 +1,197 @@
+/*
+Animal Game that asks some questions to guess animal that the user have thought of.
+Suraj Prasai
+537
+*/
+
+
+
+import java.util.Scanner;
+
+public class BinarySearchTree {                         //BST implementation to play a animal Guessing Game
+
+
+
+
+    static int counter;         //counter to count number of iteration taken to guess users choice
+    static Scanner sc = new Scanner(System.in);
+
+    public static void main(String[] args) {
+
+        Node root;
+        System.out.println("Welcome to Animal Guessing Game.");             //info about the game
+        System.out.println("You Guess An Animal");
+        System.out.println("I will ask some questions to find your guess ");
+
+
+        root = initialTree();                               // initialize root with certain values
+
+        do {
+
+            playGame(root);
+            counter = 0;
+
+        }while(askQuestion("Do you want to play again ? "));            //ask user if they want to play again or not
+
+    }
+
+    public static Node initialTree()                    //initiates a tree with root and childs values
+    {
+            Node root ;
+            Node leftChild;
+            Node rightChild;
+
+            final String rootQuestion = "Can you fly? ";
+            final String leftQuestion = "Do you have very wide wings? ";
+            final String rightQuestion= "Can you Swim?";
+            final String answer1 = "You are an Eagle ";
+            final String answer2 = "You are a Sparrow ";
+            final String answer3 = "You are Goldfish! ";
+            final String answer4 = "You are a Dog! ";
+
+            root= new Node(rootQuestion);
+
+
+            leftChild = new Node(leftQuestion);             //set left node of root
+            leftChild.setLeft(new Node(answer1));
+            leftChild.setRight(new Node(answer2));
+            root.setLeft(leftChild);
+
+            rightChild = new Node(rightQuestion);           //set right node of root
+            rightChild.setLeft(new Node(answer3));
+            rightChild.setRight(new Node(answer4));
+            root.setRight(rightChild);
+
+            return root;
+    }
+
+
+    public static void playGame (Node guess)
+    {
+
+         while (!isLeaf(guess)) {
+            counter++;
+            if ( askQuestion(guess.getValue()))         //if user selects yes as the value stored in node, guess is set as left else as right
+            {
+                guess = guess.getLeft();
+            }else
+            {
+                guess = guess.getRight();
+            }
+        }
+        System.out.println("My Guess is " +guess.getValue());       //leaf node reached after n iteration
+        if(askQuestion("Am i right? "))
+        {
+
+            System.out.println("I Guesses it in "+counter+" tries !!");
+            System.out.println("You see I am very Intelligent. :) ");
+        }else
+        {
+            addAnimal(guess);           //add new Animal the user have thought of ,as it is not currently stored
+        }
+
+    }
+
+
+    public static Boolean isLeaf(Node leaf)             //check if node is root i.e have no root
+    {
+        if(leaf.right == null && leaf.left == null)
+        {
+            return true;
+        }else
+        {
+            return false;
+        }
+    }
+
+    public static Boolean askQuestion(String question)      //receives yes/no answer from user by asking certain question
+    {
+        System.out.println(question);
+        String playAgain = sc.nextLine();
+
+        if(playAgain.equalsIgnoreCase("y") || playAgain.equalsIgnoreCase("yes"))
+        {
+            return true;
+        }else if (playAgain.equalsIgnoreCase("n") || playAgain.equalsIgnoreCase("no"))
+        {
+            return false;
+        }else
+        {
+            System.out.println("Please enter a valid choice. ( Y / N ) : ");
+            askQuestion(question);
+        }
+        return true;
+    }
+
+    public static void addAnimal(Node newNode)
+    {
+        String guessAnimal = newNode.getValue();
+        String newAnimal;
+        String animalFeature;
+
+
+        System.out.println("Sorry! i Failed to recognize you. ");
+        System.out.println("Please helo me register you in my Memory");
+        System.out.println("Can you tell me who you are? ");
+        newAnimal = sc.nextLine();
+        System.out.println("What makes u unique from others? ( A Yes / NO feature perhaps ): ");
+        animalFeature = sc.nextLine();
+
+        newNode.setValue("Do you " +animalFeature);         //replace current value by new animal's feature
+
+        if(askQuestion("Do you " +animalFeature + "?: "))
+        {
+            newNode.setLeft(new Node(newAnimal));               //add animal in left node if feature is true for it
+            newNode.setRight(new Node(guessAnimal));            //current value replaced above is placed in right node
+        }else
+        {
+            newNode.setLeft(new Node(guessAnimal));
+            newNode.setRight(new Node(newAnimal));
+        }
+
+
+    }
+
+    public static class Node {                     //class to create nodes in BST
+         String value;                       //Question stored in the node
+         Node left;                          // If answer to question is yes, next question stored in Left node
+         Node right;                         //If value is no then stored in Right node
+
+        public Node(String value) {         //Constructor for Node
+            this.value = value;             //Set value as value passed as argument
+            left= null;
+            right = null;           //initialize left and right nodes as null
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public Node getLeft() {
+            return left;
+        }
+
+        public void setLeft(Node left) {
+            this.left = left;
+        }
+
+        public Node getRight() {
+            return right;
+        }
+
+        public void setRight(Node right) {
+            this.right = right;
+        }
+    }
+
+
+
+
+
+
+
+}
